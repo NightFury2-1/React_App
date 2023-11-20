@@ -36,8 +36,9 @@ const Home = () => {
       console.log(response.data);
       setProducts(response.data);
       setIsLoading(false);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error("Network Error, Unable to get products", error);
     }
   };
   useEffect(() => {
