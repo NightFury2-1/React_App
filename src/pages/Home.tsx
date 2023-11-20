@@ -8,6 +8,7 @@ import { API_URL } from "../App";
 const Home = () => {
   const [product, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const deleteProduct = async (id: any) => {
     const result = await Swal.fire({
@@ -37,6 +38,7 @@ const Home = () => {
       setProducts(response.data);
       setIsLoading(false);
     } catch (error: any) {
+      setIsError(true);
       setIsLoading(false);
       toast.error("Network Error, Unable to get products", error);
     }
@@ -47,27 +49,31 @@ const Home = () => {
 
   return (
     <>
-      <div className="d-flex p-0 flex-wrap justify-content-center justify-content-lg-start justify-content-md-between gap-lg-4   ">
-        {isLoading ? (
-          <div className="text-center col-12">
-            <span className="loader"></span>
-          </div>
-        ) : (
-          <>
-            {product.length > 0
-              ? product.map((product, index) => {
-                  return (
-                    <Products
-                      key={index}
-                      item={product}
-                      delfunc={deleteProduct}
-                    />
-                  );
-                })
-              : "No products available"}
-          </>
-        )}
-      </div>
+      {isLoading ? (
+        <div className="text-center col-12">
+          <span className="loader"></span>
+        </div>
+      ) : (
+        <>
+          {isError ? (
+            <div className="d-flex justify-content-center ">Network error</div>
+          ) : (
+            <div className="d-flex p-0 flex-wrap justify-content-center justify-content-lg-start justify-content-md-between gap-lg-4   ">
+              {product.length > 0
+                ? product.map((product, index) => {
+                    return (
+                      <Products
+                        key={index}
+                        item={product}
+                        delfunc={deleteProduct}
+                      />
+                    );
+                  })
+                : "No products available"}
+            </div>
+          )}
+        </>
+      )}
     </>
   );
 };
