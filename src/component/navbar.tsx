@@ -2,10 +2,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Rootstate } from "../state/store";
 import { setLink, setLogin } from "../state/counter/counterSlice";
+import { useRef } from "react";
 
 const Navbar = () => {
+  let file: any = null;
   const GoPage = useNavigate();
+  const lnk = useRef(null);
   const chgLogin = () => {
+    file.current.click();
+    //console.log(lnk.current, file);
     if (isloggedIn) {
       dispatch(setLogin(false));
       dispatch(setLink(1));
@@ -13,10 +18,12 @@ const Navbar = () => {
     GoPage("/login");
   };
   const chngpage = () => {
+    file.current.click();
     //alert("hi");
     dynamicLink == 0
       ? (dispatch(setLink(1)), GoPage("/create"))
       : (dispatch(setLink(0)), GoPage("/"));
+    //console.log(lnk.current, file);
   };
   const isloggedIn = useSelector((state: Rootstate) => state.counter.islogin);
   const dynamicLink = useSelector((state: Rootstate) => state.counter.pglink);
@@ -36,6 +43,7 @@ const Navbar = () => {
           aria-controls="navbarText"
           aria-expanded="false"
           aria-label="Toggle navigation"
+          ref={(file = lnk)}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
