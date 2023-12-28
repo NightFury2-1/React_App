@@ -3,12 +3,21 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_URL } from "../App";
+import { useDispatch, useSelector } from "react-redux";
+import { Rootstate } from "../state/store";
+import { setLink } from "../state/counter/counterSlice";
 
-interface ParentProps {
-  stateChanger: (value: number) => void;
-}
+// interface ParentProps {
+//   stateChanger: (value: number) => void;
+//props: ParentProps
+// }
 
-const CreateProduct = (props: ParentProps) => {
+const CreateProduct = () => {
+  //const link = useSelector((state: Rootstate) => state.counter.pglink);
+  //const isLoggedIn = useSelector((state: Rootstate) => state.counter.islogin);
+  const dispatch = useDispatch();
+  const goPage = useNavigate();
+  const isLoggedin = useSelector((state: Rootstate) => state.counter.islogin);
   const [product, setProduct] = useState({
     name: "",
     quantity: 0,
@@ -21,10 +30,17 @@ const CreateProduct = (props: ParentProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (id != undefined) {
-      getProduct();
-      props.stateChanger(1);
-      setIsAddPage(false);
+    if (isLoggedin) {
+      if (id != undefined) {
+        getProduct();
+        //props.stateChanger(1);
+        dispatch(setLink(1));
+        setIsAddPage(false);
+      }
+    } else {
+      dispatch(setLink(1));
+      toast.error("Invalid login");
+      goPage("/login");
     }
   }, []);
 
@@ -61,7 +77,8 @@ const CreateProduct = (props: ParentProps) => {
         } else {
           console.log("update", product);
           await axios.put(`${API_URL}/api/Updateproduct/${id}`, product);
-          props.stateChanger(0);
+          // props.stateChanger(0);
+          dispatch(setLink(0));
           toast.info("Updated successfully");
         }
 

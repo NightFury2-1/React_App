@@ -4,29 +4,41 @@ import Products from "../component/Products";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { API_URL } from "../App";
+import { useSelector } from "react-redux";
+import { Rootstate } from "../state/store";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const goPage = useNavigate();
+  const isLoggedIn = useSelector((state: Rootstate) => state.counter.islogin);
+  //const dispatch = useDispatch();
   const [product, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const deleteProduct = async (id: any) => {
-    const result = await Swal.fire({
-      title: "do you really want to delete the product?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "delete",
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-    });
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(`${API_URL}/api/Deleteproduct/${id}`);
-        toast.success("Deleted successfully");
-        getProduct();
-      } catch (error: any) {
-        toast.error("Error in processing the request", error);
+    console.log(isLoggedIn);
+    if (isLoggedIn) {
+      const result = await Swal.fire({
+        title: "do you really want to delete the product?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "delete",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+      });
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`${API_URL}/api/Deleteproduct/${id}`);
+          toast.success("Deleted successfully");
+          getProduct();
+        } catch (error: any) {
+          toast.error("Error in processing the request", error);
+        }
       }
+    } else {
+      toast.error("Invalid login");
+      goPage("/login");
     }
   };
 
@@ -58,7 +70,7 @@ const Home = () => {
           {isError ? (
             <div className="d-flex justify-content-center ">Network error</div>
           ) : (
-            <div className="d-flex p-0 flex-wrap justify-content-center justify-content-lg-start justify-content-md-between gap-lg-4   ">
+            <div className="d-flex p-0 ps-lg-3 flex-wrap justify-content-center justify-content-lg-start justify-content-md-between gap-lg-4   ">
               {product.length > 0
                 ? product.map((product, index) => {
                     return (
